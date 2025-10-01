@@ -55,7 +55,7 @@ const Pagination: React.FC<PaginationProps> = ({
   if (pageNumbers.length <= 1) return null;
 
   return (
-    <nav className="flex justify-center items-center gap-1 sm:gap-2 mt-4 px-2 w-full" aria-label="Pagination">
+    <nav className="flex justify-center items-center gap-2 mt-4 px-2 w-full" aria-label="Pagination">
       <button
         onClick={() => paginate(currentPage - 1)}
         disabled={currentPage === 1}
@@ -69,7 +69,7 @@ const Pagination: React.FC<PaginationProps> = ({
         <ChevronLeft size={20} className="sm:w-5 sm:h-5" />
       </button>
       
-      <div className="flex items-center gap-1 sm:gap-2 flex-1 justify-center max-w-full overflow-x-auto scrollbar-hide">
+      <div className="flex items-center gap-1 sm:gap-2 justify-center overflow-x-auto scrollbar-hide">
         {pageNumbers.map((number, index) => (
           <button
             key={index}
