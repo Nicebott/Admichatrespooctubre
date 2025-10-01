@@ -1,0 +1,111 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Reglas para la colección de superadministradores
+    match /superadmins/{userId} {
+      // Solo superadministradores pueden leer la lista
+      allow read: if request.auth != null && exists(/databases/$(database)/documents/superadmins/$(request.auth.uid));
+      // Nadie puede crear, actualizar o eliminar superadmins desde la app (solo desde Firebase Console)
+      allow create, update, delete: if false;
+    }
+
+    // Reglas para la colección de administradores
+    match /admins/{userId} {
+      // Solo superadmins y admins pueden leer la lista de admins
+      allow read: if request.auth != null &&
+        (exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+         exists(/databases/$(database)/documents/superadmins/$(request.auth.uid)));
+      // Solo superadministradores pueden crear nuevos administradores
+      allow create: if request.auth != null && exists(/databases/$(database)/documents/superadmins/$(request.auth.uid));
+      // Solo superadministradores pueden actualizar administradores
+      allow update: if request.auth != null && exists(/databases/$(database)/documents/superadmins/$(request.auth.uid));
+      // Solo superadministradores pueden eliminar administradores
+      allow delete: if request.auth != null && exists(/databases/$(database)/documents/superadmins/$(request.auth.uid));
+    }
+
+    // Regla para la colección de productos
+    match /productos/{productoId} {
+      // Todos los usuarios pueden leer los productos
+      allow read: if true;
+
+      // Solo usuarios autenticados pueden agregar productos
+      allow create: if request.auth != null 
+        && request.resource.data.usuario == request.auth.uid;
+
+      // Solo el autor del producto o un admin pueden editar o eliminar
+      allow update, delete: if request.auth != null 
+        && (resource.data.usuario == request.auth.uid || 
+            exists(/databases/$(database)/documents/admins/$(request.auth.uid)));
+
+      // Validaciones adicionales para los datos
+      allow create, update: if request.resource.data.titulo is string
+        && request.resource.data.descripcion is string
+        && request.resource.data.precio is number
+        && request.resource.data.precio > 0
+        && request.resource.data.imagen is string
+        && (request.resource.data.usuario == request.auth.uid || 
+            exists(/databases/$(database)/documents/admins/$(request.auth.uid)));
+    }
+
+    // Regla para la colección de calificaciones (reviews)
+    match /reviews/{reviewId} {
+      // Cualquiera puede leer las reseñas
+      allow read: if true;
+
+      // Solo usuarios autenticados pueden crear reseñas
+      allow create: if request.auth != null 
+        && request.resource.data.userId == request.auth.uid;
+
+      // Solo el autor o un admin pueden modificar o eliminar reseñas
+      allow update, delete: if request.auth != null 
+        && (resource.data.userId == request.auth.uid || 
+            exists(/databases/$(database)/documents/admins/$(request.auth.uid)));
+    }
+
+    // Reglas para los foros
+    match /foros/{foroId} {
+      // Cualquiera puede leer los temas del foro
+      allow read: if true;
+
+      // Cualquier usuario autenticado puede crear
+      allow create: if request.auth != null
+        && request.resource.data.creador == request.auth.uid;
+
+      // Solo el creador o un admin pueden eliminar
+      allow delete: if request.auth != null &&
+        (resource.data.creador == request.auth.uid ||
+         exists(/databases/$(database)/documents/admins/$(request.auth.uid)));
+
+      // Solo el creador puede actualizar (a menos que sea admin)
+      allow update: if request.auth != null &&
+        (resource.data.creador == request.auth.uid ||
+         exists(/databases/$(database)/documents/admins/$(request.auth.uid)));
+
+      // Reglas para los mensajes dentro de cada foro
+      match /mensajes/{messageId} {
+        // Cualquiera puede leer los mensajes
+        allow read: if true;
+
+        // Cualquier usuario autenticado puede crear
+        allow create: if request.auth != null
+          && request.resource.data.autor == request.auth.uid;
+
+        // Solo el autor del mensaje o un admin pueden eliminar
+        allow delete: if request.auth != null &&
+          (resource.data.autor == request.auth.uid ||
+           exists(/databases/$(database)/documents/admins/$(request.auth.uid)));
+
+        // Solo el autor o un admin pueden actualizar
+        allow update: if request.auth != null &&
+          (resource.data.autor == request.auth.uid ||
+           exists(/databases/$(database)/documents/admins/$(request.auth.uid)));
+      }
+    }
+
+    // Regla por defecto para otras colecciones: denegar todo
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
