@@ -17,10 +17,10 @@ const Pagination: React.FC<PaginationProps> = ({
   darkMode
 }) => {
   const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
-
+  
   const pageNumbers = useMemo(() => {
     if (totalPages <= 1) return [];
-
+    
     const isMobile = window.innerWidth < 640;
     const delta = isMobile ? 1 : 2;
     const range = [];
@@ -55,27 +55,27 @@ const Pagination: React.FC<PaginationProps> = ({
   if (pageNumbers.length <= 1) return null;
 
   return (
-    <nav className="flex justify-center items-center gap-1 sm:gap-2 mt-4 px-2" aria-label="Pagination">
+    <nav className="flex justify-center items-center gap-1 sm:gap-2 mt-4 px-2 w-full" aria-label="Pagination">
       <button
         onClick={() => paginate(currentPage - 1)}
         disabled={currentPage === 1}
-        className={`px-2 sm:px-3 py-1 rounded-md flex-shrink-0 ${
+        className={`px-2 sm:px-3 py-2 rounded-md flex-shrink-0 ${
           darkMode
             ? 'bg-gray-800 text-blue-400 hover:bg-gray-700 disabled:text-gray-600'
             : 'bg-white text-blue-600 hover:bg-blue-50 disabled:text-gray-400'
         } disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
         aria-label="Previous page"
       >
-        <ChevronLeft size={18} className="sm:w-5 sm:h-5" />
+        <ChevronLeft size={20} className="sm:w-5 sm:h-5" />
       </button>
-
-      <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto scrollbar-hide">
+      
+      <div className="flex items-center gap-1 sm:gap-2 flex-1 justify-center max-w-full overflow-x-auto scrollbar-hide">
         {pageNumbers.map((number, index) => (
           <button
             key={index}
             onClick={() => typeof number === 'number' ? paginate(number) : undefined}
             disabled={typeof number !== 'number'}
-            className={`px-2 sm:px-3 py-1 rounded-md flex-shrink-0 min-w-[32px] sm:min-w-[36px] text-sm sm:text-base ${
+            className={`px-3 sm:px-4 py-2 rounded-md flex-shrink-0 min-w-[40px] sm:min-w-[44px] text-sm sm:text-base font-medium ${
               currentPage === number
                 ? darkMode
                   ? 'bg-blue-600 text-white'
@@ -83,25 +83,25 @@ const Pagination: React.FC<PaginationProps> = ({
                 : darkMode
                   ? 'bg-gray-800 text-blue-400 hover:bg-gray-700'
                   : 'bg-white text-blue-600 hover:bg-blue-50'
-            } ${typeof number !== 'number' ? 'cursor-default' : 'transition-colors'}`}
+            } ${typeof number !== 'number' ? 'cursor-default hover:bg-transparent' : 'transition-colors'}`}
             aria-current={currentPage === number ? 'page' : undefined}
           >
             {number}
           </button>
         ))}
       </div>
-
+      
       <button
         onClick={() => paginate(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className={`px-2 sm:px-3 py-1 rounded-md flex-shrink-0 ${
+        className={`px-2 sm:px-3 py-2 rounded-md flex-shrink-0 ${
           darkMode
             ? 'bg-gray-800 text-blue-400 hover:bg-gray-700 disabled:text-gray-600'
             : 'bg-white text-blue-600 hover:bg-blue-50 disabled:text-gray-400'
         } disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
         aria-label="Next page"
       >
-        <ChevronRight size={18} className="sm:w-5 sm:h-5" />
+        <ChevronRight size={20} className="sm:w-5 sm:h-5" />
       </button>
     </nav>
   );
