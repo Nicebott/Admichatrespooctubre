@@ -57,39 +57,39 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className={`relative w-full max-w-2xl h-[90vh] mx-4 rounded-xl shadow-xl overflow-hidden ${
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+      <div className={`relative w-full max-w-2xl max-h-[90vh] rounded-xl shadow-xl flex flex-col ${
         darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white'
       }`}>
-        <div className="sticky top-0 z-20 flex items-center justify-between p-6 border-b border-gray-700 bg-inherit">
+        <div className={`flex items-center justify-between p-4 md:p-6 border-b ${
+          darkMode ? 'border-gray-700' : 'border-gray-200'
+        }`}>
           <div>
-            <h2 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            <h2 className={`text-xl md:text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
               Calificar a {professorName}
             </h2>
-            <p className={`mt-2 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+            <p className={`mt-1 md:mt-2 text-xs md:text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
               Tu opinión ayuda a otros estudiantes a tomar mejores decisiones
             </p>
           </div>
           <button
             onClick={onClose}
             className={`p-2 rounded-lg ${
-              darkMode 
-                ? 'text-gray-400 hover:text-gray-300 hover:bg-gray-700' 
+              darkMode
+                ? 'text-gray-400 hover:text-gray-300 hover:bg-gray-700'
                 : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
             } transition-colors`}
           >
             <X size={20} />
           </button>
         </div>
-        
-        <div className="flex flex-col h-[calc(100%-5rem)] overflow-hidden">
-          <div className="flex-1 overflow-y-auto p-6">
-            <ReviewForm
-              onSubmit={handleSubmit}
-              darkMode={darkMode}
-              loading={loading}
-            />
-          </div>
+
+        <div className="flex-1 overflow-y-auto p-4 md:p-6">
+          <ReviewForm
+            onSubmit={handleSubmit}
+            darkMode={darkMode}
+            loading={loading}
+          />
         </div>
       </div>
     </div>

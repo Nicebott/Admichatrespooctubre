@@ -118,7 +118,7 @@ const CourseTable: React.FC<CourseTableProps> = ({ courses, sections, onRateSect
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full mt-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full mt-8 auto-rows-max">
       <AnimatePresence mode="popLayout">
         {sections.map((section, index) => {
           const course = courses.find(c => c.id === section.courseId);

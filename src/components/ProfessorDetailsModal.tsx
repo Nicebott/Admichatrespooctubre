@@ -7,6 +7,7 @@ import ReviewCard from './Reviews/ReviewCard';
 import ReviewStats from './Reviews/ReviewStats';
 
 interface Review {
+  id: string;
   rating: number;
   comment: string;
   timestamp: string;
@@ -52,7 +53,10 @@ const ProfessorDetailsModal: React.FC<ProfessorDetailsModalProps> = ({
       );
       
       const querySnapshot = await getDocs(reviewsQuery);
-      const reviewsData = querySnapshot.docs.map(doc => doc.data() as Review);
+      const reviewsData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      } as Review));
       
       setReviews(reviewsData);
       
@@ -146,11 +150,12 @@ const ProfessorDetailsModal: React.FC<ProfessorDetailsModalProps> = ({
                 </div>
               ) : reviews.length > 0 ? (
                 <div className="space-y-6">
-                  {reviews.map((review, index) => (
+                  {reviews.map((review) => (
                     <ReviewCard
-                      key={index}
+                      key={review.id}
                       review={review}
                       darkMode={darkMode}
+                      onDelete={fetchReviews}
                     />
                   ))}
                 </div>

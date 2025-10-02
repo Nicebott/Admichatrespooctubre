@@ -43,7 +43,7 @@ function App() {
   const [allCourses, setAllCourses] = useState<Course[]>([]);
   const [allSections, setAllSections] = useState<Section[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(20);
+  const [itemsPerPage] = useState(21);
   const [selectedCampus, setSelectedCampus] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);

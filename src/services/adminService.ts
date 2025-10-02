@@ -91,3 +91,25 @@ export const removeAdmin = async (userId: string): Promise<boolean> => {
     return false;
   }
 };
+
+export const deleteReview = async (reviewId: string): Promise<boolean> => {
+  try {
+    const currentUser = auth.currentUser;
+    if (!currentUser) return false;
+
+    // Verificar que el usuario actual es Admin o SuperAdmin
+    const isAdmin = await checkIsAdmin(currentUser.uid);
+    const isSuperAdmin = await checkIsSuperAdmin(currentUser.uid);
+
+    if (!isAdmin && !isSuperAdmin) {
+      console.error('Solo los administradores pueden eliminar reseñas');
+      return false;
+    }
+
+    await deleteDoc(doc(firestore, 'reviews', reviewId));
+    return true;
+  } catch (error) {
+    console.error('Error deleting review:', error);
+    return false;
+  }
+};

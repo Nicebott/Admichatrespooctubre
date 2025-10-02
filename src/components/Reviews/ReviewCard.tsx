@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { User } from 'lucide-react';
+import { User, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import RatingStars from './RatingStars';
+import { getCurrentUserAdminStatus, getCurrentUserSuperAdminStatus, deleteReview } from '../../services/adminService';
+import toast from 'react-hot-toast';
 
 interface ReviewCardProps {
   review: {
+    id: string;
     rating: number;
     comment: string;
     timestamp: string;
@@ -17,9 +20,41 @@ interface ReviewCardProps {
     wouldTakeAgain: number;
   };
   darkMode: boolean;
+  onDelete?: () => void;
 }
 
-const ReviewCard: React.FC<ReviewCardProps> = ({ review, darkMode }) => {
+const ReviewCard: React.FC<ReviewCardProps> = ({ review, darkMode, onDelete }) => {
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    checkAdminStatus();
+  }, []);
+
+  const checkAdminStatus = async () => {
+    const adminStatus = await getCurrentUserAdminStatus();
+    const superAdminStatus = await getCurrentUserSuperAdminStatus();
+    setIsAdmin(adminStatus || superAdminStatus);
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm('¿Estás seguro de que quieres eliminar esta reseña?')) {
+      return;
+    }
+
+    setDeleting(true);
+    const success = await deleteReview(review.id);
+
+    if (success) {
+      toast.success('Reseña eliminada exitosamente');
+      if (onDelete) {
+        onDelete();
+      }
+    } else {
+      toast.error('Error al eliminar la reseña');
+      setDeleting(false);
+    }
+  };
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -63,6 +98,22 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, darkMode }) => {
                 </span>
               </div>
             </div>
+            {isAdmin && (
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                className={`p-2 rounded-lg transition-colors ${
+                  deleting
+                    ? darkMode ? 'bg-gray-700 text-gray-500' : 'bg-gray-100 text-gray-400'
+                    : darkMode
+                      ? 'text-red-400 hover:bg-red-900/30'
+                      : 'text-red-500 hover:bg-red-50'
+                }`}
+                title="Eliminar reseña"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            )}
           </div>
 
           <div className={`mt-4 text-sm whitespace-pre-wrap ${
